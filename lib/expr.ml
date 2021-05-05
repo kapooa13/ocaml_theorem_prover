@@ -14,9 +14,9 @@ let rec string_of_expr expr =
 	  	  | y :: ys -> f ^ "(" ^ (List.fold_left (fun x y -> x ^ ", " ^ y) (string_of_expr y) (List.map string_of_expr ys)) ^ ")")
 	| Compose xs -> List.fold_left (fun x y -> x ^ " . " ^ y) (string_of_expr (List.hd xs)) (List.map string_of_expr (List.tl xs))
 
-let rec getExprs expr =
+let rec get_exprs expr =
 	match expr with
-	| Compose xs -> List.fold_left (@) [] (List.map getExprs xs)
+	| Compose xs -> List.fold_left (@) [] (List.map get_exprs xs)
 	| _          -> [expr]
 
 exception ComposeError of string
@@ -27,10 +27,10 @@ If compose returns `Compose xs`, then it should satisfy the following property:
    * xs itself has no element in the form `Compose ys`
 *)
 let compose xs =
-	match getExprs (Compose xs) with
+	match get_exprs (Compose xs) with
 	| []      -> raise (ComposeError "Invalid argument to smart constructor")
 	| x :: [] -> x
-	| _       -> Compose (getExprs (Compose xs))
+	| _       -> Compose (get_exprs (Compose xs))
 
 let complexity expr =
 	match expr with

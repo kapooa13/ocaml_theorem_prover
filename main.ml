@@ -1,6 +1,6 @@
 open Lib
 
-let () = print_endline "Hello, World!"
+(* let () = print_endline "Hello, World!" *)
 
 (* Exprs *)
 
@@ -51,4 +51,20 @@ let snd_law = Law.Law ("definition snd", Expr.compose [snd_expr; pair_expr], Exp
 let laws = [fst_law; snd_law]
 let ppair_expr = Expr.Const ("pair", [Var 'a'; Var 'a'])
 let pair_proof = Rewrite.prove laws (Expr.compose [fst_expr; ppair_expr], Expr.compose [snd_expr; ppair_expr])
-let () = print_endline pair_proof
+(* let () = print_endline pair_proof *)
+
+let token_list_of_string s =
+  let lb = Lexing.from_string s in
+  let rec helper l = 
+  try 
+    let t = Lexer.token lb in
+    if t = Parser.EOL then List.rev l else helper (t::l)
+  with _ -> List.rev l
+  in
+    helper []
+
+let parse_expr s = Parser.main Lexer.token (Lexing.from_string s)
+let () = print_endline (Expr.string_of_expr (parse_expr "a . b . c\n"))
+let () = print_endline (Expr.string_of_expr (parse_expr "zip(x)\n"))
+let () = print_endline (Expr.string_of_expr (parse_expr "zip(x, f, g)\n"))
+let () = print_endline (Expr.string_of_expr (parse_expr "f . g . h . zip (x , y)\n"))

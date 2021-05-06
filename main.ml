@@ -27,3 +27,19 @@ let e = Expr.Compose [Expr.Var 'f'; Expr.Var 'g'; Expr.Const ("zip", [Expr.Compo
 let () = print_endline (Expr.string_of_expr e)
 (* let () = List.iter (fun x -> print_endline (Rewrite.string_of_subexpr x)) (Rewrite.subExprs (Expr.compose [a; b])) *)
 let () = List.iter (fun x -> print_endline (Rewrite.string_of_subexpr x)) (Rewrite.subExprs e)
+(* 
+let n = 3
+let l = List.map (fun x -> x + 2) (Rewrite.take (n - 2) (List.init (n - 1) Fun.id))
+let s = List.init (n - 1) Fun.id
+
+let prow i = List.map (fun x -> (i, x)) s
+let prod = List.concat (List.map (fun x -> prow x) l)
+
+let () = print_endline (String.concat " " (List.map string_of_int l))
+let () = print_endline (String.concat " " (List.map string_of_int s))
+
+let print_tuples l = List.iter (fun (a, b) -> Printf.printf "(%d, %d) " a b) l
+
+let () = print_tuples prod
+let () = print_endline ("")
+ *)

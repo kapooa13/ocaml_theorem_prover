@@ -36,18 +36,19 @@ let rec drop n xs =
 	| _ :: ys -> if n <= 0 then xs else drop (n - 1) ys
 
 let rec args es =
-	let sexprs = List.concat (List.map subExprs es) in
-	(List.mapi (fun idx sube -> Subexpr (get_expr_subexpr sube, Arg (idx, get_loc_subexpr sube))) sexprs)
+	let sexprs = List.map subExprs es in
+	let f idx sube = Subexpr ((get_expr_subexpr sube), (Arg (idx, get_loc_subexpr sube))) in
+	List.concat (List.mapi (fun idx sube -> List.map (f idx) sube) sexprs)
 
 and subExprs expr =
 	match expr with
 	| Expr.Var _         -> [Subexpr (expr, All)]
-	| Expr.Const (_, es) -> [Subexpr (expr, All)] @ args es
-	| Expr.Compose es    -> [Subexpr (expr, All)] @ args es @ segments es
+	| Expr.Const (_, es) -> Subexpr (expr, All) :: args es
+	| Expr.Compose es    -> Subexpr (expr, All) :: segments es @ args es
 
 and segments es =
 	let n = List.length es in
-	let l = List.map (fun x -> x + 2) (drop 2 (List.init (n - 1) Fun.id)) in
+	let l = List.map (fun x -> x + 2) (take (n - 2) (List.init (n - 1) Fun.id)) in
 	let s = List.init (n - 1) Fun.id in
 	let prow i = List.map (fun x -> (i, x)) s in
 	let prod = List.concat (List.map (fun x -> prow x) l) in

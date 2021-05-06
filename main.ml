@@ -23,4 +23,7 @@ let () = print_endline (String.concat " " (List.map Expr.string_of_expr c))
 
 (* Laws *)
 
-
+let e = Expr.Compose [Expr.Var 'f'; Expr.Var 'g'; Expr.Const ("zip", [Expr.Compose [Expr.Var 'm'; Expr.Var 'n']; Expr.Compose [Expr.Var 'p'; Expr.Var 'q']])]
+let () = print_endline (Expr.string_of_expr e)
+(* let () = List.iter (fun x -> print_endline (Rewrite.string_of_subexpr x)) (Rewrite.subExprs (Expr.compose [a; b])) *)
+let () = List.iter (fun x -> print_endline (Rewrite.string_of_subexpr x)) (Rewrite.subExprs e)

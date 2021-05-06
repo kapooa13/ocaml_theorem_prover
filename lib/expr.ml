@@ -1,6 +1,8 @@
 
+type varname = char
+
 type expr = 
-	| Var of char 
+	| Var of varname
 	| Const of string * expr list
 	| Compose of expr list
 

@@ -1,11 +1,6 @@
 
 (* Lawname *)
-type lawname =
-	LawName of string
-
-let string_of_lawname lawname =
-	match lawname with
-	| LawName name -> name
+type lawname = string
 
 (* Law *)
 type law =
@@ -13,7 +8,7 @@ type law =
 
 let string_of_law law =
 	match law with
-	| Law (name, lhs, rhs) -> string_of_lawname name ^ ": " ^ Expr.string_of_expr lhs ^ " = " ^ Expr.string_of_expr rhs
+	| Law (name, lhs, rhs) ->  name ^ ": " ^ Expr.string_of_expr lhs ^ " = " ^ Expr.string_of_expr rhs
 
 (* Step *)
 type step =
@@ -52,7 +47,7 @@ let rec conclusion calc =
 		| Step (_, expr) -> conclusion (Calc (expr, rest)))
 
 let link expr1 expr2 =
-	if expr1 = expr2 then [] else [Step (LawName "... ??? ...", expr2)]
+	if expr1 = expr2 then [] else [Step ("... ??? ...", expr2)]
 
 let init xs =
 	List.rev (List.tl (List.rev xs))
@@ -77,7 +72,7 @@ let paste lcalc rcalc =
 
 let string_of_step step =
 	match step with
-	| Step (lname, expr) -> "=  { " ^ string_of_lawname lname ^ " }\n  " ^ Expr.string_of_expr expr ^ "\n"
+	| Step (lname, expr) -> "=  { " ^  lname ^ " }\n  " ^ Expr.string_of_expr expr ^ "\n"
 
 let string_of_calc calc =
 	match calc with

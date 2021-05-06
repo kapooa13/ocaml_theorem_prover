@@ -1,11 +1,9 @@
-(* open Expr *)
 open Lib
 
 let () = print_endline "Hello, World!"
 
 (* Exprs *)
 
-let () = print_endline "End"
 let a = Expr.Var 'a'
 let b = Expr.Var 'b'
 let c = Expr.get_exprs (Expr.Compose [a])

@@ -40,7 +40,6 @@ let rec parts n xs =
 		)
 	)
 
-
 let rec xmatch subs e1 e2 =
 	match e1 with
 	| Expr.Var v -> (
@@ -70,3 +69,6 @@ and xmatchlist subs list_expr_pairs =
 		let nextSubs = xmatch subs pattern expr in
 		List.concat (List.map (fun nextSub -> xmatchlist nextSub rest) nextSubs)
 	)
+
+let mmatch expr1 expr2 = 
+	xmatch [] expr1 expr2

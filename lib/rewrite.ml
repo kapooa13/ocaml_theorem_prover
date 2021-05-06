@@ -36,11 +36,11 @@ let rec drop n xs =
 	| _ :: ys -> if n <= 0 then xs else drop (n - 1) ys
 
 let rec args es =
-	let sexprs = List.map subExprs es in
+	let sexprs = List.map get_subexprs es in
 	let f idx sube = Subexpr ((get_expr_subexpr sube), (Arg (idx, get_loc_subexpr sube))) in
 	List.concat (List.mapi (fun idx sube -> List.map (f idx) sube) sexprs)
 
-and subExprs expr =
+and get_subexprs expr =
 	match expr with
 	| Expr.Var _         -> [Subexpr (expr, All)]
 	| Expr.Const (_, es) -> Subexpr (expr, All) :: args es
@@ -51,5 +51,68 @@ and segments es =
 	let l = List.map (fun x -> x + 2) (take (n - 2) (List.init (n - 1) Fun.id)) in
 	let s = List.init (n - 1) Fun.id in
 	let prow i = List.map (fun x -> (i, x)) s in
-	let prod = List.concat (List.map (fun x -> prow x) l) in
+	let prod = List.concat (List.map prow l) in
 	(List.map (fun (l, s) -> Subexpr (Expr.compose (take l (drop s es)), Seg (s, l))) prod)
+
+let rec replace expr loc replacement =
+	match loc with
+	 | All -> replacement
+	 | Arg (idx, aloc) -> (
+	 	match expr with
+	 	| Expr.Const (f, xs) -> (
+	 		let replaced_expr = replace (List.nth xs idx) aloc replacement in
+	 		Expr.Const (f, replace_at idx replaced_expr xs)
+	 	)
+	 	| Expr.Compose xs -> (
+	 		let replaced_expr = replace (List.nth xs idx) aloc replacement in
+	 		Expr.compose (replace_at idx replaced_expr xs)
+	 	)
+	 	| _ -> expr
+	 )
+	 | Seg (idx, len) -> (
+	 	match expr with
+	 	| Expr.Compose xs -> Expr.compose (replace_seg idx len replacement xs)
+	 	| _ -> expr
+	 )
+
+and replace_at pos value xs =
+	List.mapi (fun idx x -> if pos == idx then value else x) xs
+
+and replace_seg pos len seg xs =
+	(take pos xs) @ (seg :: (drop (pos + len) xs))
+
+let rec rewrite (llaws, rlaws) expr =
+	let laws = llaws @ rlaws in
+	let subexprs = get_subexprs expr in
+	let prow i = List.map (fun x -> (i, x)) subexprs in
+	let prod = List.concat (List.map prow laws) in
+	List.concat (List.map (fun (law, sube) -> applyLaw law sube expr) prod)
+
+and applyLaw law sube expr = 
+	match law with
+	| Law.Law (lname, lhs, rhs) -> (
+		match sube with
+		| Subexpr (isub, iloc) -> (
+			let matchings = Subst.mmatch lhs isub in
+			let replaced = replace expr iloc rhs in
+			List.map (fun sub -> (lname, Subst.apply_subst sub replaced)) matchings
+		)
+	)
+
+let rec repeatedly rw current =
+	match (rw current) with
+	| (name, next) :: _ -> (name, next) :: repeatedly rw next
+	| [] -> []
+
+let calculate pls expr =
+	Law.Calc (expr, List.map (fun (lname, expr) -> Law.Step (lname, expr)) (repeatedly (rewrite pls) expr))
+
+(* Proving *)
+
+let rec prove laws eqn =
+	Law.string_of_calc (prove_eqn laws eqn)
+
+and prove_eqn laws (lhs, rhs) =
+	let (basic, others) = List.partition Law.basic_law laws in
+	Law.paste (calculate (basic, others) lhs) (calculate (basic, others) rhs)
+

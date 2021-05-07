@@ -12,4 +12,4 @@ rule token = parse
   | ','                 { COMMA }
   | '('                 { LPAREN }
   | ')'                 { RPAREN }
-  | eof                 { raise Eof }
+  | eof                 { EOF }

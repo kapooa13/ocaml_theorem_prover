@@ -5,11 +5,13 @@
 %token COMMA
 %token LPAREN RPAREN
 %token EOL
+%token EOF
 %start main             /* the entry point */
 %type <Expr.expr> main
 %%
 main:
     expr EOL                { $1 }
+  | expr EOF                { $1 }
 ;
 expr:
     VARNAME                    { Expr.Var $1 }

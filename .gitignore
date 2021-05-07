@@ -8,6 +8,11 @@
 *.cmxs
 *.cmxa
 
+# lex and yacc generated files
+lib/parser.ml
+lib/parser.mli
+lib/lexer.ml
+
 # ocamlbuild working directory
 _build/
 

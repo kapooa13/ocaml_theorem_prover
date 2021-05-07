@@ -6,6 +6,8 @@
 %token LPAREN RPAREN
 %token EOL
 %token EOF
+%left COMPOSE
+%nonassoc CONNAME
 %start main             /* the entry point */
 %type <Expr.expr> main
 %%
@@ -17,6 +19,7 @@ expr:
     VARNAME                    { Expr.Var $1 }
   | expr COMPOSE expr          { Expr.compose [$1; $3] }
   | CONNAME LPAREN list_expr RPAREN { Expr.Const ($1, $3) }
+  | CONNAME expr               { Expr.Const ($1, [$2])}
   | CONNAME                    { Expr.Const ($1, [])}
 ;
 list_expr:

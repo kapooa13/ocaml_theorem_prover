@@ -41,3 +41,18 @@ and prove_eqn laws (lhs, rhs) =
 	let (basic, others) = List.partition Law.basic_law laws in
 	Law.paste (Subexpr.calculate (basic, others) lhs) (Subexpr.calculate (basic, others) rhs)
 
+(* Parse tests *)
+
+let f = Expr.Var 'f'
+let g = Expr.Var 'g'
+let fst = Expr.Const ("fst", [])
+let nilexpr = Expr.Const ("nil", [])
+let mapexpr expr = Expr.Const ("map", [expr])
+
+let%test _ = parse_expr "concat.map(guard p)" = Expr.compose [Expr.Const ("concat", []); Expr.Const ("map", [Expr.Const ("guard", [Expr.Var 'p'])])]
+let%test _ = parse_expr "map f . map g" = Expr.compose [Expr.Const ("map", [f]); Expr.Const ("map", [Expr.Var 'g'])]
+
+let%test _ = parse_eqn "nil . f = nil" = (Expr.compose [nilexpr; f], nilexpr)
+let%test _ = parse_eqn "fst . pair(f, g) = f" = (Expr.compose [Expr.Const ("fst", []); Expr.Const ("pair", [f; g])], f)
+
+let%test _ = parse_law "map functor: map f . map g = map (f . g)" = Law.Law ("map functor", Expr.compose [mapexpr f; mapexpr g], mapexpr (Expr.compose [f; g]))

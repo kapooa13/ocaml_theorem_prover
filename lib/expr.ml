@@ -59,3 +59,20 @@ let singleton xs =
 	match xs with
 	| _ :: [] -> true
 	| _  -> false
+
+(* Expr tests *)
+
+let x = Var 'x'
+let y = Var 'y'
+let a = Const ("foo", [x; y])
+let b = Const ("bar", [y; x])
+let c = Const ("foo", [x; y])
+let d = Const ("thing", [x; x; x])
+let e = Var 'z'
+
+let%test _ = compose [Var 'x'] = Var 'x'
+let%test _ = compose [Const ("zip", [x; y])] = Const ("zip", [x; y])
+let%test _ = compose [a; b] = Compose [a; b]
+let%test _ =
+  compose [Compose [a; b]; Compose [c; d; e]; d; e]
+    = Compose [a; b; c; d; e; d; e]

@@ -36,7 +36,11 @@ RHS:
 
 ## Lexing and Parsing
 
-We used `ocamllex` and `ocamlyacc` for generating the lexer and parser respectively. Once we defined a grammar for the expression type, building off of that to create a parser for laws and equations was fairly easy. Some of the issues with regards to precedence were solved later on. See `lexer.mll` and `parser.mly` for implementation details.
+The project uses `ocamllex` and `ocamlyacc` for generating the lexer and parser respectively. Once we define a grammar for the expression type, building off of that to create a parser for laws and equations is fairly easy. Some of the issues with regards to precedence were solved later on. See `lexer.mll` and `parser.mly` for implementation details.
+
+## Testing
+
+We use `ppx_inline_test` to write out tests for every type, their respective methods, along with tests for the parsing methods. The tests can be run by executing `make test`.
 
 ## More Examples
 

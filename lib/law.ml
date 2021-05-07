@@ -77,3 +77,53 @@ let string_of_step step =
 let string_of_calc calc =
 	match calc with
 	| Calc (expr, steps) -> "\n  " ^ Expr.string_of_expr expr ^ "\n" ^ String.concat "" (List.map string_of_step steps)
+
+(* Law tests *)
+
+let%test _ =
+  let nil = Expr.Const ("nil", []) in 
+  basic_law (Law ("nil Expr.conststant", (Expr.Compose [nil; Expr.Var 'f']), nil))
+
+let%test _ =
+  let ide = Expr.Const ("id", []) in
+  let mp_ide = Expr.Const ("map", [ide]) in 
+  basic_law (Law ("map id, reverse", ide, mp_ide)) = false
+
+let%test _ =
+  let nil = Expr.Const ("nil", []) in
+  let mapf = Expr.Const ("map", [Expr.Var 'f']) in 
+  basic_law (Law ("nil natural", (Expr.Compose [mapf; nil]), nil))
+
+(* Conclusion tests *)
+
+let c0 = Calc (Expr.Var 'f', [])
+let c1 = Calc (Expr.Var 'f', [Step ("reason1", Expr.Var 'g'); Step ("reason2", Expr.Var 'h')])
+let e5 = Expr.Compose ([
+			Expr.Const ("fst", []); 
+			Expr.Const ("pair", [
+					Expr.Compose [
+							Expr.Var 'f'; 
+							Expr.Const ("fst", [])
+						];
+					Expr.Compose [
+							Expr.Var 'g';
+							Expr.Const ("snd", [])
+					]
+				]);
+			Expr.Const ("zip", [])
+		])
+
+let%test _ = conclusion c0 = Expr.Var 'f'
+let%test _ = conclusion c1 = Expr.Var 'h'
+let%test _ = conclusion (Calc (e5, [Step ("refl", e5)])) = e5
+
+(* Reverse Calc tests *)
+
+let x = Expr.Var 'x'
+let a = Expr.Var 'a'
+let b = Expr.Var 'b'
+
+let%test _ = reverseCalc (Calc (x, [])) = Calc (x, [])
+let%test _ = reverseCalc (Calc (x, [Step ("foo", a); Step ("bar", b)])) = (Calc(b, [Step ("bar", a); Step ("foo", x)]))
+
+

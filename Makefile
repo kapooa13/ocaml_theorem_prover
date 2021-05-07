@@ -14,3 +14,6 @@ parser: ./lib/parser.mly
 
 clean:
 	rm -f ./lib/lexer.ml ./lib/parser.ml ./lib/parser.mli
+
+test:
+	dune runtest

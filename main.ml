@@ -33,8 +33,10 @@ let others =
 let laws = filters @ ifs @ pairs @ others
 
 let () = print_endline (Prove.prove laws "fst . pair(a, a)  = snd . pair (a, a)")
+(* 
 let () = print_endline (Prove.prove laws "fst . pair(a, b) = b")
 
 let () = print_endline (Prove.prove laws "filter p . map f  = map f . filter (p . f)")
 let () = print_endline (Prove.prove laws "map (f . g) . nil = nil . f")
 let () = print_endline (Prove.prove laws "fst . pair(a, b) . snd . pair(a, b) = a . b")
+ *)

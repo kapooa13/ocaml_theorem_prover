@@ -72,3 +72,28 @@ and xmatchlist subs list_expr_pairs =
 
 let mmatch expr1 expr2 = 
 	xmatch [] expr1 expr2
+
+(* Substitution tests *)
+
+let x = Expr.Var 'x'
+let y = Expr.Var 'y'
+let a = Expr.Var 'a'
+let d = Expr.Var 'd'
+let e = Expr.Var 'e'
+
+let s1 = [('x', a); ('y', d)]
+
+let e1 = Expr.Compose [x; y]
+let e2 = Expr.Compose [a; d]
+let e3 = Expr.Compose [Expr.Const ("toto", []); Expr.Const ("tata", [])]
+
+let%test _ = apply_subst s1 e1 = e2
+let%test _ = apply_subst s1 e3 = e3
+let%test _ = apply_subst s1 x = a
+let%test _ = apply_subst s1 e = e
+
+let%test _ = parts 1 [1; 2; 3; 4] = [[[1; 2; 3; 4]]]
+let%test _ = parts 2 [1; 2; 3; 4] = [[[1]; [2; 3; 4]]; [[1; 2]; [3; 4]]; [[1; 2; 3]; [4]]]
+let%test _ = parts 3 [1; 2; 3; 4] = [[[1]; [2]; [3; 4]]; [[1]; [2; 3]; [4]]; [[1; 2]; [3]; [4]]]
+let%test _ = parts 4 [1; 2; 3; 4] = [[[1]; [2]; [3]; [4]]]
+let%test _ = parts 5 [1; 2; 3; 4] = []

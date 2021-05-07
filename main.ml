@@ -53,18 +53,46 @@ let ppair_expr = Expr.Const ("pair", [Var 'a'; Var 'a'])
 let pair_proof = Rewrite.prove laws (Expr.compose [fst_expr; ppair_expr], Expr.compose [snd_expr; ppair_expr])
 (* let () = print_endline pair_proof *)
 
-let token_list_of_string s =
-  let lb = Lexing.from_string s in
-  let rec helper l = 
-  try 
-    let t = Lexer.token lb in
-    if t = Parser.EOL then List.rev l else helper (t::l)
-  with _ -> List.rev l
-  in
-    helper []
+exception ParseError of string
 
-let parse_expr s = Parser.main Lexer.token (Lexing.from_string s)
-let () = print_endline (Expr.string_of_expr (parse_expr "a . b . c\n"))
-let () = print_endline (Expr.string_of_expr (parse_expr "zip(x)\n"))
-let () = print_endline (Expr.string_of_expr (parse_expr "zip(x, f, g)\n"))
-let () = print_endline (Expr.string_of_expr (parse_expr "f . g . h . zip (x , y)\n"))
+let parse_expr (s : string) =
+	Parser.main Lexer.token (Lexing.from_string s)
+
+let parse_eqn (s : string) =
+	let eqn_list = String.split_on_char '=' s in
+	if List.length eqn_list = 2 then (
+		let lhs_expr = parse_expr (List.nth eqn_list 0) in
+		let rhs_expr = parse_expr (List.nth eqn_list 1) in
+		(lhs_expr, rhs_expr)
+	) else (
+		raise (ParseError "Equation not of expected form 'lhs = rhs'")
+	)
+
+let parse_law (s : string) =
+	let law_list = String.split_on_char ':' s in
+	if List.length law_list = 2 then (
+		let law_name = List.nth law_list 0 in
+		let (lhs, rhs) = parse_eqn (List.nth law_list 1) in
+		Law.Law (law_name, lhs, rhs)
+	) else (
+		raise (ParseError "Law not of expected form 'law_name : lhs = rhs'")
+	)
+
+
+let print_expr expr = 
+	print_endline (Expr.string_of_expr (expr))
+let print_eqn (lhs, rhs) = 
+	print_endline ("lhs: " ^ (Expr.string_of_expr lhs) ^ "\nrhs: " ^ (Expr.string_of_expr rhs))
+let print_law law = 
+	print_endline (Law.string_of_law law)
+
+
+let () = print_endline (Expr.string_of_expr (parse_expr "a . b . c"))
+let () = print_endline (Expr.string_of_expr (parse_expr "zip(x)"))
+let () = print_endline (Expr.string_of_expr (parse_expr "zip(x, f, g)"))
+let () = print_endline (Expr.string_of_expr (parse_expr "f . g . h . zip (x , y)"))
+let () = print_eqn (parse_eqn "fst . pair(a, a) = snd . pair (a, a)")
+let () = print_law (parse_law "definition fst : fst . pair(f, g) = f")
+
+
+

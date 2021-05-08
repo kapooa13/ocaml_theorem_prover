@@ -1,3 +1,5 @@
 (executable
  (name main)
- (libraries lib opium))
+ (libraries lib js_of_ocaml)
+ (modes js exe byte)
+ (preprocess (pps js_of_ocaml-ppx)))

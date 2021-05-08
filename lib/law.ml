@@ -125,5 +125,3 @@ let b = Expr.Var 'b'
 
 let%test _ = reverseCalc (Calc (x, [])) = Calc (x, [])
 let%test _ = reverseCalc (Calc (x, [Step ("foo", a); Step ("bar", b)])) = (Calc(b, [Step ("bar", a); Step ("foo", x)]))
-
-

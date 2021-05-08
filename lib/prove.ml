@@ -1,41 +1,49 @@
 
 exception ParseError of string
 
+let newline = "\n"
+
 let parse_expr (s : string) =
 	Parser.main Lexer.token (Lexing.from_string s)
 
 let parse_eqn (s : string) =
 	let eqn_list = String.split_on_char '=' s in
 	if List.length eqn_list = 2 then (
-		let lhs_expr = parse_expr (List.nth eqn_list 0) in
-		let rhs_expr = parse_expr (List.nth eqn_list 1) in
+		let lhs_expr = List.nth eqn_list 0 |> String.trim |> parse_expr in
+		let rhs_expr = List.nth eqn_list 1 |> String.trim |> parse_expr in
 		(lhs_expr, rhs_expr)
 	) else (
-		raise (ParseError "Equation not of expected form 'lhs = rhs'")
+		raise (ParseError ("Equation `" ^ s ^ "` not of expected form `lhs = rhs`"))
 	)
 
 let parse_law (s : string) =
 	let law_list = String.split_on_char ':' s in
 	if List.length law_list = 2 then (
-		let law_name = List.nth law_list 0 in
-		let (lhs, rhs) = parse_eqn (List.nth law_list 1) in
+		let law_name = List.nth law_list 0 |> String.trim in
+		let (lhs, rhs) = (List.nth law_list 1) |> String.trim |> parse_eqn in
 		Law.Law (law_name, lhs, rhs)
 	) else (
-		raise (ParseError "Law not of expected form 'law_name : lhs = rhs'")
+		raise (ParseError ("Law `" ^ s ^ "` not of expected form `law_name: lhs = rhs`"))
 	)
 
 let print_expr expr = 
 	print_endline (Expr.string_of_expr (expr))
 let print_eqn (lhs, rhs) = 
-	print_endline ("lhs: " ^ (Expr.string_of_expr lhs) ^ "\nrhs: " ^ (Expr.string_of_expr rhs))
+	print_endline ("lhs: " ^ (Expr.string_of_expr lhs) ^ newline ^ "rhs: " ^ (Expr.string_of_expr rhs))
 let print_law law = 
 	print_endline (Law.string_of_law law)
 
 let rec prove laws eqn =
-	let (lhs, rhs) = parse_eqn eqn in (
-		"TPT: " ^ Expr.string_of_expr lhs ^ " == " ^ Expr.string_of_expr rhs ^ "\n" ^
-		"LHS:"  ^ Law.string_of_calc (prove_eqn laws (lhs, rhs)) ^ "RHS:"
-	)
+	try
+		let (lhs, rhs) = parse_eqn eqn in (
+			"TPT: " ^ Expr.string_of_expr lhs ^ " == " ^ Expr.string_of_expr rhs ^ newline ^
+			"LHS:"  ^ Law.string_of_calc (prove_eqn laws (lhs, rhs)) ^ "RHS:"
+		)
+	with e ->
+        let msg = Printexc.to_string e
+        and stack = Printexc.get_backtrace () in
+        	if eqn = "" then "Error: No equation to prove" ^ newline ^ msg ^ stack ^ newline
+      		else "Calling `prove` on equation: " ^ eqn ^ newline ^ msg ^ stack ^ newline
 
 and prove_eqn laws (lhs, rhs) =
 	let (basic, others) = List.partition Law.basic_law laws in

@@ -17,9 +17,16 @@ let () =
   Js.export_all
   (object%js
     method prove laws str = 
-      let parsed_laws = parse_js_laws laws in
-        str
-        |> Js.to_string
-        |> prove_statement_with_laws parsed_laws
-        |> Js.string
+      try 
+        let parsed_laws = parse_js_laws laws in
+            str
+              |> Js.to_string
+              |> prove_statement_with_laws parsed_laws
+              |> Js.string
+      with e ->
+        let newline = "\n" in
+        let msg = Printexc.to_string e
+        and stack = Printexc.get_backtrace () in
+          "Error: " ^ newline ^ msg ^ stack ^ newline
+            |> Js.string
   end)

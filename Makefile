@@ -14,6 +14,7 @@ parser: ./lib/parser.mly
 js: lexer parser
 	dune build ./main.bc
 	js_of_ocaml +base/runtime.js _build/default/main.bc
+	cp ./_build/default/main.js .
 
 clean:
 	rm -f ./lib/lexer.ml ./lib/parser.ml ./lib/parser.mli

@@ -2,13 +2,23 @@
 
 Automatic theorem prover written in OCaml.
 
+![alt text](./screenshot.png?raw=true)
+
 ## Building
 
-To build the project, clone the repo, and type `make`. This builds the lexer, parser, the `main.exe` executable, and then executes it.
+### Requirements
+
+This project uses `Js_of_ocaml` for compiling OCaml bytecode to Javascript.
+
+### Instructions
+
+To build the project, clone the repo, and type `make`. This builds the lexer, parser, the `main.exe` executable
+as well as the javascript target `main.js`.
 
 ## Example
 
-We give our `prove` function a list of laws along with a string for the expression we would like to prove. It then proceeds to parse the expression and attempt to prove that the LHS can be reduced to RHS using the given laws. The output is shown below.
+Some laws have been predefined for the benefit of the user. Given an input string and a list of laws,
+we attempt to generate a proof for the statement.
 
 ```
 TPT: fst . pair(a , a) == snd . pair(a , a)
@@ -21,7 +31,7 @@ LHS:
 RHS:
 ```
 
-Of course, if we give it something nonsensical, it says it doesn't know how to prove it by showing a mystery step that magically solves our proof.
+Of course, if given something nonsensical, the program exclaims "I don't know how to prove it!" by showing a mystery step that magically solves our proof.
 
 ```
 TPT: fst . pair(a , b) == b
@@ -44,7 +54,7 @@ We use `ppx_inline_test` to write out tests for every type, their respective met
 
 ## More Examples
 
-Below outlined are some more examples. They can all be found in `main.ml`.
+Below outlined are some more examples.
 
 ### Interchangeability of map and filter
 

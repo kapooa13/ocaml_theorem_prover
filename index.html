@@ -56,9 +56,9 @@ map functor:    map f . map g  = map (f . g)
                         <h4>Proofs to try</h4>
                         <ul>
                             <li>Definition of fst: <code>fst . pair (a, b) = a</code></li>
-                            <li>Nil composition: <code>map(f . g) . nil == nil . f</code></li>
-                            <li>Composition of pairs: <code>fst . pair(a , b) . snd . pair(a , b) == a . b</code></li>
-                            <li>Interchangeability of map and filter: <code>filter p . map f == map f . filter(p . f)</code></li>
+                            <li>Nil composition: <code>map(f . g) . nil = nil . f</code></li>
+                            <li>Composition of pairs: <code>fst . pair(a , b) . snd . pair(a , b) = a . b</code></li>
+                            <li>Interchangeability of map and filter: <code>filter p . map f = map f . filter(p . f)</code></li>
                         </ul>
                     </div>
                     <br>
@@ -68,7 +68,7 @@ map functor:    map f . map g  = map (f . g)
                         <h3>Proof</h3>
                             <div class="mb-3">
                                 <label for="generatedProof" class=  "form-label">Generated proof</label>
-                                  <textarea class="form-control" readonly id="generated-proof" rows="10">
+                                  <textarea class="form-control" readonly id="generated-proof" rows="8">
                                   </textarea>
                             </div>
                     </div>

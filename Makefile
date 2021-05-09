@@ -1,7 +1,6 @@
 
-all: lexer parser
+all: lexer parser js
 	dune build
-	dune exec ./main.exe
 
 build:
 	dune build

@@ -114,3 +114,7 @@ LHS:
   a . b
 RHS:
 ```
+
+## Credits
+
+This project was inspired by the functional programming course taught at McMaster University by Dr Jacques Carette.
